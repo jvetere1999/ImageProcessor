@@ -1,33 +1,68 @@
 package structs;
 
-import org.apache.commons.codec.binary.Base64;
+
 
 import javax.imageio.ImageIO;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
+
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
 
 public class Image {
 
-    protected String            fileName;
-    protected int               height;
-    protected int               width;
-    protected BufferedImage     img;
-    protected byte[]            imgArr;
-    protected String            format;
+    protected String                format;
+    protected String                fileName;
+    protected int                   height;
+    protected int                   width;
+
+    protected BufferedImage         img;
+    protected ColorStorage[][]      imgArr;
+
 
     public Image(String _fileName) {
         fileName = _fileName;
         format = fileName.substring(fileName.lastIndexOf("."));
         inputImg();
-        System.out.println("here");
-        toByteArray();
+        System.out.println(height + " " + width);
+        getPixels();
     }
 
+    public Image(String _fileName, ColorStorage[][] _imgArr) {
+        fileName    = _fileName;
+        img         = new BufferedImage(_imgArr.length, _imgArr[0].length, TYPE_INT_ARGB);
+        imgArr      = _imgArr.clone();
+
+        rebuild();
+        saveImg();
+    }
+    protected void rebuild () {
+        int rgb = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                switch ( imgArr[x][y].favoriteColor){
+                    case RED -> rgb = Color.RED.getRGB();
+                    case BLUE -> rgb = Color.BLUE.getRGB();
+                    case GREEN -> rgb = Color.GREEN.getRGB();
+                }
+                img.setRGB(x, y, rgb);
+            }
+        }
+    }
+
+    /**
+     * Gets array of color values
+     *
+     * @return imgArr[][]
+     */
+    public ColorStorage[][] getColorStorage() {
+        return imgArr;
+    }
     /**
      * Creates buffered read and sets value of img to the
      * ARGB byte array of the image given in File Name
@@ -47,39 +82,48 @@ public class Image {
     /**
      * Saves img to new file
      *
-     * @param _fileName - Name of new image file
      * @throws IOException
      */
-    public void saveImg(String _fileName) throws IOException {
-        File outputFile = new File(_fileName);
-        ImageIO.write(img, "png", outputFile);
+    public void saveImg() {
+        try {
+            File outputFile = new File(fileName);
+            ImageIO.write(img, "png", outputFile);
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage() + "here");
+        }
     }
 
     /**
-     * Convertes buffered read to byte array using format found in main
+     * Convertes buffered read to pixleArray
      *
      * @throws IOException
      */
-    public void toByteArray() {
-        try {
-            ByteArrayOutputStream tempImgArr = new ByteArrayOutputStream();
-            ImageIO.write(img, format, tempImgArr);
-            imgArr = tempImgArr.toByteArray();
+    public void getPixels() {
+        ColorStorage[][] colorArray = new ColorStorage[width][height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int pixel = img.getRGB(x, y);
+                Color color = new Color(pixel, true);
+                colorArray[x] [y] = new ColorStorage(color);
+            }
         }
-        catch (IOException e){
-            System.out.println("here");
-            System.out.println(e.getMessage());
-        }
+        imgArr = colorArray;
     }
 
     /**
      * Takes byte array of image and turns it into an string
      * @return byte array represented as stringΩ
      */
-    @Override
-    public String toString() {
-        String rtr = Base64.encodeBase64String(imgArr);
-        return rtr;
+
+    public void output() {
+        for (int y = 0; y < height; y++) {
+            System.out.print("| ");
+            for (int x = 0; x < width; x++) {
+                System.out.print(", " + imgArr[y] [x]);
+            }
+            System.out.println(" |");
+        }
     }
 
 }
