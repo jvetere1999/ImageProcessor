@@ -1,14 +1,16 @@
 package structs;
 
+import enums.FavoriteColor;
+
 import java.awt.*;
 
-import static structs.FavoriteColor.*;
+import static enums.FavoriteColor.*;
 
 public class ColorStorage {
     public int              red;
     public int              green;
     public int              blue;
-    public FavoriteColor    favoriteColor;
+    public FavoriteColor favoriteColor;
     public Color            color;
 
     public ColorStorage(Color _color) {

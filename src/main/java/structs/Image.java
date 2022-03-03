@@ -1,15 +1,13 @@
 package structs;
 
 
+import enums.ProcessType;
 
 import javax.imageio.ImageIO;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
@@ -26,30 +24,49 @@ public class Image {
 
 
     public Image(String _fileName) {
-        fileName = _fileName;
-        format = fileName.substring(fileName.lastIndexOf("."));
+        fileName    = _fileName;
+        format      = fileName.substring(fileName.lastIndexOf("."));
         inputImg();
-        System.out.println(height + " " + width);
         getPixels();
     }
 
-    public Image(String _fileName, ColorStorage[][] _imgArr) {
+    public Image(String _fileName, ColorStorage[][] _imgArr, ProcessType type) {
         fileName    = _fileName;
-        img         = new BufferedImage(_imgArr.length, _imgArr[0].length, TYPE_INT_ARGB);
+        width       = _imgArr.length;
+        height      = _imgArr[0].length;
+        img         = new BufferedImage(width, height, TYPE_INT_ARGB);
         imgArr      = _imgArr.clone();
 
-        rebuild();
+        switch (type) {
+            case DOMINATE_COLOR -> DOMINATE_COLOR();
+            case COLOR_MIX_UP    -> COLOR_MIX_UP();
+        }
+
         saveImg();
     }
-    protected void rebuild () {
+
+    /**
+     * Rebuils image with eveyr pixel set to the formers "Favorite" or dominant image
+     */
+    protected void DOMINATE_COLOR () {
         int rgb = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 switch ( imgArr[x][y].favoriteColor){
-                    case RED -> rgb = Color.RED.getRGB();
-                    case BLUE -> rgb = Color.BLUE.getRGB();
-                    case GREEN -> rgb = Color.GREEN.getRGB();
+                    case RED    -> rgb = Color.RED.getRGB();
+                    case BLUE   -> rgb = Color.BLUE.getRGB();
+                    case GREEN  -> rgb = Color.GREEN.getRGB();
                 }
+                img.setRGB(x, y, rgb);
+            }
+        }
+    }
+    protected void COLOR_MIX_UP() {
+        int rgb;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                ColorStorage temp = imgArr[x][y];
+                rgb = new Color(temp.green, temp.blue, temp.red).getRGB();
                 img.setRGB(x, y, rgb);
             }
         }
@@ -82,7 +99,7 @@ public class Image {
     /**
      * Saves img to new file
      *
-     * @throws IOException
+     * @throws IOException in case of failure to save image (?)
      */
     public void saveImg() {
         try {
@@ -90,7 +107,7 @@ public class Image {
             ImageIO.write(img, "png", outputFile);
         }
         catch (IOException e) {
-            System.out.println(e.getMessage() + "here");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -100,7 +117,7 @@ public class Image {
      * @throws IOException
      */
     public void getPixels() {
-        ColorStorage[][] colorArray = new ColorStorage[width][height];
+        ColorStorage[][] colorArray = new ColorStorage[width ][height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int pixel = img.getRGB(x, y);
@@ -120,7 +137,7 @@ public class Image {
         for (int y = 0; y < height; y++) {
             System.out.print("| ");
             for (int x = 0; x < width; x++) {
-                System.out.print(", " + imgArr[y] [x]);
+                System.out.print(", " + imgArr[x] [y]);
             }
             System.out.println(" |");
         }

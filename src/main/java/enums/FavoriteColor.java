@@ -1,4 +1,4 @@
-package structs;
+package enums;
 
 public enum FavoriteColor {
     RED,
