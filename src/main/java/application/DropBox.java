@@ -1,22 +1,34 @@
 package application;
 
-
-import javafx.application.Application;
-import javafx.scene.Scene;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import runtime.ImageUtils;
 
-public class main extends Application {
-    @Override
-    public void start(Stage stage) throws Exception {
-        Label label = new Label("Drag a file here");
-        Label dropped = new Label("");
-        VBox dragTarget = new VBox();
-        dragTarget.getChildren().addAll(label, dropped);
+import java.util.ArrayList;
+
+public class DropBox {
+
+    public VBox                 me;
+    public ArrayList<String>    files;
+
+    public DropBox(String _text) {
+        Label           label;
+        Label           dropped;
+        Button          submit;
+        VBox            dragTarget;
+
+        label           = new Label(_text);
+        dropped         = new Label("");
+        submit          = new Button("Submit");
+        dragTarget      = new VBox();
+        files           = new ArrayList<>();
+
+        dragTarget.setAlignment(Pos.CENTER);
+        dragTarget.getChildren().addAll(label, dropped, submit);
 
         dragTarget.setOnDragOver((dragEvent) -> {
             if(dragEvent.getGestureSource() != dragTarget
@@ -32,22 +44,14 @@ public class main extends Application {
             if (board.hasFiles()) {
                 dropped.setText(board.getFiles().toString());
                 System.out.println(board.getFiles().toString());
+                files.add(board.getFiles().toString());
                 success = true;
             }
             dragEvent.setDropCompleted(success);
             dragEvent.consume();
         });
+        submit.setOnAction( submitEvent -> ImageUtils.createImages(files));
 
-        StackPane root = new StackPane();
-        root.getChildren().add(dragTarget);
-
-        Scene scene = new Scene(root, 500, 250);
-
-        stage.setTitle("Drag image");
-        stage.setScene(scene);
-        stage.show();
-    }
-    public static void main (String[] args) {
-        launch(args);
+        me = dragTarget;
     }
 }

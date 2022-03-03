@@ -86,9 +86,13 @@ public class Image {
      */
     protected void inputImg() {
         try {
+            System.out.println("b4 file");
             File input = new File(fileName);
+            System.out.println("aftr file");
             img = ImageIO.read(input);
+            System.out.println("Here2");
             height = img.getHeight();
+            System.out.println("Here3");
             width = img.getWidth();
         }
         catch (IOException e ){
@@ -98,8 +102,6 @@ public class Image {
 
     /**
      * Saves img to new file
-     *
-     * @throws IOException in case of failure to save image (?)
      */
     public void saveImg() {
         try {
@@ -113,8 +115,6 @@ public class Image {
 
     /**
      * Convertes buffered read to pixleArray
-     *
-     * @throws IOException
      */
     public void getPixels() {
         ColorStorage[][] colorArray = new ColorStorage[width ][height];
@@ -130,7 +130,6 @@ public class Image {
 
     /**
      * Takes byte array of image and turns it into an string
-     * @return byte array represented as stringΩ
      */
 
     public void output() {
