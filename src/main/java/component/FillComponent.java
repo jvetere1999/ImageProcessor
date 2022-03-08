@@ -30,8 +30,7 @@ public class FillComponent {
         int normalizedYMax = yMax - yMin;
         display = new int[normalizedXMax+1][ normalizedYMax+1];
         for (int[] cord: com1.component.keySet()) {
-            display [cord[0]-xMin][cord[1] -yMin] = 1;
-            if ( !isAdjacent(cord[0]-xMin, cord[1] -yMin))
+            display [cord[0]-xMin][cord[1] -yMin] = 1;if ( !isAdjacent(cord[0]-xMin, cord[1] -yMin))
                 com2.componentAdd(new int[] { cord[0]-xMin, cord[1] -yMin }, new ColorStorage(Color.BLUE));
 
 
