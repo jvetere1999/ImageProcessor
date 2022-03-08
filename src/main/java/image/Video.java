@@ -1,4 +1,4 @@
-package structs;
+package image;
 
 import com.github.sarxos.webcam.Webcam;
 

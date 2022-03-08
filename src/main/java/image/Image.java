@@ -1,13 +1,15 @@
-package structs;
+package image;
 
 
-import enums.ProcessType;
+import component.Component;
+import processor.ProcessType;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 
@@ -16,8 +18,8 @@ public class Image {
 
     protected String                format;
     protected String                fileName;
-    protected int                   height;
-    protected int                   width;
+    public int                      height;
+    public  int                     width;
 
     protected BufferedImage         img;
     protected ColorStorage[][]      imgArr;
@@ -38,12 +40,52 @@ public class Image {
         imgArr      = _imgArr.clone();
 
         switch (type) {
-            case DOMINATE_COLOR -> DOMINATE_COLOR();
+            case DOMINATE_COLOR  -> DOMINATE_COLOR();
             case COLOR_MIX_UP    -> COLOR_MIX_UP();
         }
 
         saveImg();
     }
+
+    public Image (String _fileName, ArrayList<component.Component> _com, int _width, int _height) {
+        fileName    = _fileName;
+        width       = _width;
+        height      = _height;
+        img         = new BufferedImage(width, height, TYPE_INT_ARGB);
+        for (component.Component piece: _com
+             ) {
+            createComponentImage(piece);
+        }
+
+        saveImg();
+
+    }
+
+     public void createComponentImage(Component _com) {
+         for (int[] cord : _com.component.keySet()) {
+             int rgb = -1;
+             switch ( _com.rootColor.favoriteColor){
+                 case RED    -> rgb = Color.RED.getRGB();
+                 case BLUE   -> rgb = Color.BLUE.getRGB();
+                 case GREEN  -> rgb = Color.GREEN.getRGB();
+             }
+             img.setRGB(cord[0], cord[1], rgb);
+         }
+
+//        int[] temp;
+//         for (int y = 0; y < height; y++) {
+//             for (int x = 0; x < width; x++) {
+//                 temp = new int[] {x, y};
+//                 if (_com.contains(temp)) {
+//
+//                     img.setRGB(x, y, _com.getColor());
+//                 }
+//                 else {
+//                     img.setRGB(x, y, Color.WHITE.getRGB());
+//                 }
+//             }
+//         }
+     }
 
     /**
      * Rebuils image with eveyr pixel set to the formers "Favorite" or dominant image

@@ -1,4 +1,4 @@
-package enums;
+package image;
 
 public enum FavoriteColor {
     RED,
